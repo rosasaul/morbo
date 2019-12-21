@@ -5,7 +5,7 @@
 import serial, time
 
 class sds011:
-    wake_time = 60 # Minimum spec is 30sec, but that didn't work, fan needed 10 sec to spin up, 30sec to stabalize, plus buffer
+    wake_time = 40 # Minimum spec is 30sec, but that didn't work, fan needed 10 sec to spin up, 30sec to stabalize, plus buffer
     cmd_sleep = bytearray([0xAA,0xB4,0x06,0x01,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0xFF,0xFF,0x05,0xAB])
     cmd_wake = bytearray([0xAA,0xB4,0x06,0x01,0x01,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0xFF,0xFF,0x06,0xAB])
 
@@ -26,7 +26,7 @@ class sds011:
     def readPM(self):
         if self.sleeping:
             self.wakeUp()
-        data = self.ser.read(10)
+        data = self.ser.read(size=10)
         pmtwofive = ((data[3] * 256) + data[2]) / 10
         pmten = ((data[5] * 256) + data[4]) / 10
         return {"PM2.5": pmtwofive, "PM10": pmten}
