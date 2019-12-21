@@ -26,7 +26,7 @@ class sds011:
     def readPM(self):
         if self.sleeping:
             self.wakeUp()
-        data = self.ser.read(9)
+        data = self.ser.read(10)
         pmtwofive = ((data[3] * 256) + data[2]) / 10
         pmten = ((data[5] * 256) + data[4]) / 10
         return {"PM2.5": pmtwofive, "PM10": pmten}
