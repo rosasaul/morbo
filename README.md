@@ -1,6 +1,6 @@
 # Morbo
 
-Morbo is an in home set of high quality loq cost air sensors. This is designed to help monitor indoor air quality.
+Morbo is an in home set of high quality low cost air sensors. This is designed to help monitor indoor air quality, but could work outdoor in a limited setting.
 
 ## TODO
 
