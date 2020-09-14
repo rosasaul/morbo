@@ -1,0 +1,15 @@
+# Morbo Air Quality service
+
+[Unit]
+Description=Air Quality Sensors
+After=multi-user.target
+
+[Service]
+Type=idle
+ExecStart=sensors.py
+TimeoutSec=30
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
