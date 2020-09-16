@@ -60,6 +60,7 @@ d3.csv("/sensors.php?now=" + Date.now(),
     return {
       timestamp : d3.timeParse("%Y-%m-%d %H:%M:%S")(d.timestamp), 
       temperature : ((+d.temperature * 9) / 5) + 32,
+      tempC : +d.temperature,
       humidity : +d.humidity,
       pm2p5 : temp_pm2p5,
       pm10 : temp_pm10,
@@ -69,39 +70,43 @@ d3.csv("/sensors.php?now=" + Date.now(),
   // Now I can use this dataset:
   function(data) {
     var latest_temp = data[0].temperature.toFixed(2);
+    var latest_tempC = data[0].tempC;
     var latest_co2 = data[0].co2;
     var latest_hum = data[0].humidity.toFixed(2);
     var latest_pm2p5 = data[0].pm2p5.toFixed(1);
     var latest_pm10 = data[0].pm10.toFixed(1);
     var latest_timestamp = data[0].timestamp;
 
+    var hum_lower = (-20 / 9 * latest_tempC) + (275 / 3);
+    var hum_upper = (-55 / 6 * latest_tempC) + (860 / 3);
+
     var summary = "<h4><b>" + format(latest_timestamp) + "</b></h4>";
 
-    if(latest_temp < 65){ summary += "<div class=\"alert alert-primary\">"; }
-    else if(latest_temp > 85){ summary += "<div class=\"alert alert-danger\">"; }
-    else if(latest_temp > 75){ summary += "<div class=\"alert alert-warning\">"; }
-    else { summary += "<div class=\"alert alert-primary\">"; }
+    if(latest_temp <= 65){ summary += "<div class=\"alert alert-primary\">"; }
+    else if(latest_temp >= 85){ summary += "<div class=\"alert alert-danger\">"; }
+    else if(latest_temp >= 75){ summary += "<div class=\"alert alert-warning\">"; }
+    else { summary += "<div class=\"alert alert-success\">"; }
     summary += "Temperature : <b>" + latest_temp + "</b> (F)</div>";
 
-    if(latest_co2 > 1500){ summary += "<div class=\"alert alert-danger\">"; }
-    else if(latest_co2 > 850){ summary += "<div class=\"alert alert-warning\">"; }
-    else { summary += "<div class=\"alert alert-primary\">"; }
+    if(latest_co2 >= 2000){ summary += "<div class=\"alert alert-danger\">"; }
+    else if(latest_co2 >= 1000){ summary += "<div class=\"alert alert-warning\">"; }
+    else { summary += "<div class=\"alert alert-success\">"; }
     summary += "CO2 : <b>" + latest_co2 + "</b> (PPM)</div>";
 
-    if(latest_hum < 20){ summary += "<div class=\"alert alert-danger\">"; }
-    else if(latest_hum > 60){ summary += "<div class=\"alert alert-warning\">"; }
-    else { summary += "<div class=\"alert alert-primary\">"; }
+    if(latest_hum < hum_lower){ summary += "<div class=\"alert alert-danger\">"; }
+    else if(latest_hum > hum_upper){ summary += "<div class=\"alert alert-warning\">"; }
+    else { summary += "<div class=\"alert alert-success\">"; }
     summary += "Relative Humidity : <b>" + latest_hum + "</b> (%)</div>";
 
-    if(latest_pm2p5 > 120){ summary += "<div class=\"alert alert-danger\">"; }
-    else if(latest_pm2p5 > 60){ summary += "<div class=\"alert alert-warning\">"; }
-    else { summary += "<div class=\"alert alert-primary\">"; }
-    summary += "PM2.5 : <b>" + latest_pm2p5 + "</b> (PPM)</div>";
+    if(latest_pm2p5 >= 55){ summary += "<div class=\"alert alert-danger\">"; }
+    else if(latest_pm2p5 >= 12){ summary += "<div class=\"alert alert-warning\">"; }
+    else { summary += "<div class=\"alert alert-success\">"; }
+    summary += "PM2.5 : <b>" + latest_pm2p5 + "</b> (&#181;g/m<sup>3</sup>)</div>";
 
-    if(latest_pm10 > 350){ summary += "<div class=\"alert alert-danger\">"; }
-    else if(latest_pm10 > 100){ summary += "<div class=\"alert alert-warning\">"; }
-    else { summary += "<div class=\"alert alert-primary\">"; }
-    summary += "PM10 : <b>" + latest_pm10 + "</b> (PPM)</div>";
+    if(latest_pm10 >= 180){ summary += "<div class=\"alert alert-danger\">"; }
+    else if(latest_pm10 >= 50){ summary += "<div class=\"alert alert-warning\">"; }
+    else { summary += "<div class=\"alert alert-success\">"; }
+    summary += "PM10 : <b>" + latest_pm10 + "</b> (&#181;g/m<sup>3</sup>)</div>";
 
     $("#summary").append(summary);
 
@@ -329,7 +334,7 @@ d3.csv("/sensors.php?now=" + Date.now(),
     .on("mouseover", function (d) {
       div.transition().duration(200).style("opacity", .9);
       div.html(
-        d.timestamp + "<br>" + d.pm2p5 + " (PPM)"
+        d.timestamp + "<br>" + d.pm2p5 + " (&#181;g/m<sup>3</sup>)"
       )
       .style("left", (d3.event.pageX + 10) + "px")
       .style("top", (d3.event.pageY - 15) + "px");
@@ -366,7 +371,7 @@ d3.csv("/sensors.php?now=" + Date.now(),
     .on("mouseover", function (d) {
       div.transition().duration(200).style("opacity", .9);
       div.html(
-        d.timestamp + "<br>" + d.pm10 + " (PPM)"
+        d.timestamp + "<br>" + d.pm10 + " (&#181;g/m<sup>3</sup>)"
       )
       .style("left", (d3.event.pageX + 10) + "px")
       .style("top", (d3.event.pageY - 15) + "px");
